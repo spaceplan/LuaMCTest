@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "hello:block/mysterious_ore_overworld"
+    }
+  }
+}
