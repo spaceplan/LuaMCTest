@@ -3,7 +3,7 @@ function hello()
     print 'hello'
 end
 --带参函数
-function test(table)
-    print(table)
+function test(str)
+    print(str["a"])
     return 'haha'
 end
