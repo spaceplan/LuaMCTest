@@ -1,5 +1,6 @@
 package com.xtx.hello.blocks;
 
+import com.xtx.hello.LuaFunction;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -100,11 +101,7 @@ public class PowergenBlock extends Block implements EntityBlock {
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult trace) {
         if (!level.isClientSide) {
             System.out.println("Hello From code1!");
-            BlockState a=level.getBlockState(pos);
-            level.destroyBlock(pos,true);
-            BlockPos pos1=new BlockPos(pos.getX()-1,pos.getY()-1,pos.getZ()-1);
-            level.destroyBlock(pos1,true);
-            level.setBlock(pos1,a,2);
+            LuaFunction.LuaTest();
         }
 //        if (!level.isClientSide) {
 //            BlockEntity be = level.getBlockEntity(pos);

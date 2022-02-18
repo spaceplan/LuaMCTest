@@ -136,9 +136,20 @@ repositories {
         url "https://cursemaven.com"
     }
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
-    // flatDir {
-    //     dir 'libs'
-    // }
+     flatDir {
+         dir 'libs'
+     }
+}
+
+// Fix non-mod dependencies not being loaded in dev
+configurations {
+    library
+    implementation.extendsFrom library
+}
+minecraft.runs.all {
+    lazyToken('minecraft_classpath') {
+        configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
+    }
 }
 
 dependencies {
@@ -146,6 +157,7 @@ dependencies {
     // that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.18.1-39.0.64'
+    library files("libs/luaj-jse-3.0.2.jar")
 //    compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
 //    implementation fg.deobf("mezz.jei:jei-${jei_version}")
 //
@@ -154,13 +166,15 @@ dependencies {
     // at runtime, use the full JEI jar
     runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
     implementation fg.deobf("curse.maven:the-one-probe-245211:3550084")
+
     // Real mod deobf dependency examples - these get remapped to your current mappings
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api") // Adds JEI API as a compile dependency
     // runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}") // Adds the full JEI mod as a runtime dependency
-    // implementation fg.deobf("com.tterrag.registrate:Registrate:MC${mc_version}-${registrate_version}") // Adds registrate as a dependency
+    // implementation fg.deobf("com.tterrag.registrate:Registrate:MC${mc_version}-${registrate_ve   rsion}") // Adds registrate as a dependency
 
     // Examples using mod jars from ./libs
-    // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
+
+
 
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
@@ -179,6 +193,14 @@ jar {
                 "Implementation-Vendor"   : "examplemodsareus",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
+    }
+//    from {
+//        files("libs/luaj-jse-3.0.2.jar").collect{ it.isDirectory() ? it : zipTree(it) }
+//    }
+    from {
+        (configurations.runtimeClasspath).collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
     }
 }
 
