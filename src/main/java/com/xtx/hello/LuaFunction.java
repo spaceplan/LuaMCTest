@@ -1,40 +1,40 @@
 package com.xtx.hello;
 
+import com.xtx.hello.blocks.PowergenBlock;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.EntityGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.Logger;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
+import net.minecraftforge.fml.common.Mod;
 
 public class LuaFunction {
-    public BlockState GetBlock(Level level, int x, int y, int z) {
-        return level.getBlockState(new BlockPos(x, y, z));
+    //    private Level level;
+//    private Player playerNow;
+//    public LuaFunction()
+//    {
+//        this.playerNow= ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(Player.createPlayerUUID("Dev"));
+//        this.level= playerNow.getLevel();
+//    }
+    public static LuaTable GetBlock(int x, int y, int z) {
+        Player playerNow = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(Player.createPlayerUUID("Dev"));
+        Level level = playerNow.getLevel();
+        BlockState tmp = level.getBlockState(new BlockPos(x, y, z));
+        LuaTable table = LuaTable.tableOf();
+        table.set("DescriptionId", tmp.getBlock().getDescriptionId());
+        return table;
     }
 
     public void BlockDig(Level level, int x, int y, int z) {
         level.destroyBlock(new BlockPos(x, y, z), true);
 
     }
-    public static void Lua()
-    {
-        System.out.println("Hel");
-    }
-    public static void LuaTest()
-    {
-        String Path = "C:\\ForgeProject\\1.18.1\\Hello\\src\\main\\java\\com\\xtx\\hello\\res\\lua\\test.lua";	//lua脚本文件所在路径
-        Globals globals = JsePlatform.standardGlobals();
-        globals.loadfile(Path).call();
-//获取带参函数test
-        LuaTable table= LuaTable.tableOf();
-        table.set("a",1);
-        LuaValue func1 = globals.get(LuaValue.valueOf("test"));
-//执行test方法,传入String类型的参数参数
-        String data = func1.call(table).toString();
-        //打印lua函数回传的数据
-        System.out.println(data);
-    }
+
 
 }

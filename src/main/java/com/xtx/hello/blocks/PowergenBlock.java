@@ -31,6 +31,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
+import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.JsePlatform;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -39,7 +43,7 @@ public class PowergenBlock extends Block implements EntityBlock {
 
     public static final String MESSAGE_POWERGEN = "message.powergen";
     public static final String SCREEN_TUTORIAL_POWERGEN = "screen.tutorial.powergen";
-
+    public static Level nowLevel;
     private static final VoxelShape RENDER_SHAPE = Shapes.box(0.1, 0.1, 0.1, 0.9, 0.9, 0.9);
 
     public PowergenBlock() {
@@ -101,7 +105,8 @@ public class PowergenBlock extends Block implements EntityBlock {
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult trace) {
         if (!level.isClientSide) {
             System.out.println("Hello From code1!");
-            LuaFunction.LuaTest();
+            nowLevel=level;
+            this.LuaTest(player.createPlayerUUID("Dev").toString(),pos.getX(), pos.getY(), pos.getZ());
         }
 //        if (!level.isClientSide) {
 //            BlockEntity be = level.getBlockEntity(pos);
@@ -123,5 +128,22 @@ public class PowergenBlock extends Block implements EntityBlock {
 //            }
 //        }
         return InteractionResult.SUCCESS;
+    }
+    public void LuaTest(String UUID,int x,int y,int z)
+    {
+        String Path = "C:\\ForgeProject\\1.18.1\\Hello\\src\\main\\java\\com\\xtx\\hello\\res\\lua\\test.lua";	//lua脚本文件所在路径
+        Globals globals = JsePlatform.standardGlobals();
+        globals.loadfile(Path).call();
+//获取带参函数test
+        LuaTable table= LuaTable.tableOf();
+        table.set("x",x);
+        table.set("y",y);
+        table.set("z",z);
+        table.set("uuid",UUID);
+        LuaValue func1 = globals.get(LuaValue.valueOf("main"));
+//执行test方法,传入String类型的参数参数
+        String data = func1.call(table).toString();
+        //打印lua函数回传的数据
+        System.out.println(data);
     }
 }
